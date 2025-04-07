@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Support\Database\Migrations;
+namespace api_eco\Tests\Support\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 

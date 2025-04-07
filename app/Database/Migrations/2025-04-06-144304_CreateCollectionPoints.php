@@ -19,6 +19,7 @@ class CreateCollectionPoints extends Migration
         ]);
         $this->forge->addPrimaryKey('id');
         $this->forge->createTable('collection_points');
+        $this->forge->addForeignKey('partner_id', 'partners', 'id', 'CASCADE', 'CASCADE');
     }
 
     public function down()
