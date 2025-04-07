@@ -1,68 +1,164 @@
-# CodeIgniter 4 Application Starter
+# 🌱 EcoAssist API
 
-## What is CodeIgniter?
+API para gestão de logística reversa e sustentabilidade, desenvolvida em CodeIgniter 4. Conecta parceiros de coleta, usuários finais e gera relatórios de impacto ambiental.
 
-CodeIgniter is a PHP full-stack web framework that is light, fast, flexible and secure.
-More information can be found at the [official site](https://codeigniter.com).
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-This repository holds a composer-installable app starter.
-It has been built from the
-[development repository](https://github.com/codeigniter4/CodeIgniter4).
+## ✨ Funcionalidades
 
-More information about the plans for version 4 can be found in [CodeIgniter 4](https://forum.codeigniter.com/forumdisplay.php?fid=28) on the forums.
+- **Autenticação JWT** para parceiros e usuários
+- **Geolocalização** de pontos de coleta
+- Registro de **coletas** com cálculo de CO₂ economizado
+- **Relatórios** de impacto ambiental
+- Sistema de **gamificação** com leaderboard
+- API RESTful completa
 
-You can read the [user guide](https://codeigniter.com/user_guide/)
-corresponding to the latest version of the framework.
+## 🚀 Começando
 
-## Installation & updates
+### Pré-requisitos
 
-`composer create-project codeigniter4/appstarter` then `composer update` whenever
-there is a new release of the framework.
+- PHP 7.4+
+- MySQL 5.7+
+- Composer
+- Postman (para testes)
 
-When updating, check the release notes to see if there are any changes you might need to apply
-to your `app` folder. The affected files can be copied or merged from
-`vendor/codeigniter4/framework/app`.
+### Instalação
 
-## Setup
+1. Clone o repositório:
+```bash
+git clone https://github.com/seu-usuario/ecoassist-api.git
+cd ecoassist-api
+```
 
-Copy `env` to `.env` and tailor for your app, specifically the baseURL
-and any database settings.
+2. Instale as dependências:
+```bash
+composer install
+```
 
-## Important Change with index.php
+3. Configure o ambiente:
+```bash
+cp env .env
+```
 
-`index.php` is no longer in the root of the project! It has been moved inside the *public* folder,
-for better security and separation of components.
+Edite o `.env` com suas credenciais do MySQL:
+```ini
+database.default.hostname = localhost
+database.default.database = ecoassist_db
+database.default.username = root
+database.default.password = sua_senha
+JWT_SECRET_KEY = sua_chave_secreta_aqui
+```
 
-This means that you should configure your web server to "point" to your project's *public* folder, and
-not to the project root. A better practice would be to configure a virtual host to point there. A poor practice would be to point your web server to the project root and expect to enter *public/...*, as the rest of your logic and the
-framework are exposed.
+4. Execute as migrations e seeders:
+```bash
+php spark migrate
+php spark db:seed UserSeeder
+php spark db:seed PartnerSeeder
+php spark db:seed CollectionPointSeeder
+```
 
-**Please** read the user guide for a better explanation of how CI4 works!
+5. Inicie o servidor:
+```bash
+php spark serve
+```
 
-## Repository Management
+## 🔍 Endpoints Principais
 
-We use GitHub issues, in our main repository, to track **BUGS** and to track approved **DEVELOPMENT** work packages.
-We use our [forum](http://forum.codeigniter.com) to provide SUPPORT and to discuss
-FEATURE REQUESTS.
+### Autenticação
 
-This repository is a "distribution" one, built by our release preparation script.
-Problems with it can be raised on our forum, or as issues in the main repository.
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| POST | `/api/auth/register` | Registro de novo usuário/parceiro |
+| POST | `/api/auth/login` | Login para obter token JWT |
 
-## Server Requirements
+### Pontos de Coleta
 
-PHP version 8.1 or higher is required, with the following extensions installed:
+```http
+GET /api/points/nearby?lat=-23.563&lng=-46.652
+Authorization: Bearer <token>
+```
 
-- [intl](http://php.net/manual/en/intl.requirements.php)
-- [mbstring](http://php.net/manual/en/mbstring.installation.php)
+**Exemplo de resposta:**
+```json
+[
+  {
+    "id": 1,
+    "name": "Ponto Paulista",
+    "distance": "0.8 km",
+    "materials": ["plástico", "vidro"]
+  }
+]
+```
 
-> [!WARNING]
-> - The end of life date for PHP 7.4 was November 28, 2022.
-> - The end of life date for PHP 8.0 was November 26, 2023.
-> - If you are still using PHP 7.4 or 8.0, you should upgrade immediately.
-> - The end of life date for PHP 8.1 will be December 31, 2025.
+### Coletas
 
-Additionally, make sure that the following extensions are enabled in your PHP:
+```http
+POST /api/collections
+Headers: 
+  Authorization: Bearer <token_parceiro>
+Body:
+{
+  "point_id": 1,
+  "material": "plástico",
+  "weight_kg": 5.0
+}
+```
 
-- json (enabled by default - don't turn it off)
-- [mysqlnd](http://php.net/manual/en/mysqlnd.install.php) if you plan to use MySQL
-- [libcurl](http://php.net/manual/en/curl.requirements.php) if you plan to use the HTTP\CURLRequest library
+### Relatórios
+
+```http
+GET /api/reports/impact?start_date=2024-01-01
+Headers:
+  Authorization: Bearer <token_admin>
+```
+
+### Gamificação
+
+```http
+GET /api/leaderboard
+Headers:
+  Authorization: Bearer <token>
+```
+
+## Documentação Completa da API
+
+## 🛠 Testando com Postman
+
+1. Importe a coleção:
+   * Baixe o arquivo `EcoAssist_API.postman_collection.json`
+   * No Postman: File → Import → Selecionar arquivo
+2. Configure as variáveis de ambiente:
+   * `base_url`: `http://localhost:8080`
+   * `token` (será preenchido automaticamente após login)
+3. Fluxo de teste sugerido:
+   1. `Register Partner`
+   2. `Login Partner`
+   3. `Create Collection Point`
+   4. `Register Collection`
+   5. `Get Leaderboard`
+
+## 🌟 Gamificação
+
+Usuários ganham pontos por descarte sustentável:
+* 10 pontos por kg de plástico
+* 15 pontos por kg de eletrônicos
+* 5 pontos por kg de vidro
+
+**Exemplo de pontuação:**
+```json
+{
+  "user_id": 3,
+  "name": "Eco Warrior",
+  "total_points": 450,
+  "total_kg": 30.5
+}
+```
+
+## ⚙️ Variáveis de Ambiente
+
+| Chave | Exemplo | Descrição |
+|-------|---------|-----------|
+| `JWT_SECRET_KEY` | `sua_chave_secreta` | Chave para tokens JWT |
+| `database.default` | Configuração do MySQL | Credenciais do banco |
+
+
