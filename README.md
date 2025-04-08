@@ -26,7 +26,7 @@ API para gestão de logística reversa e sustentabilidade, desenvolvida em CodeI
 
 1. Clone o repositório:
 ```bash
-git clone https://github.com/seu-usuario/ecoassist-api.git
+git clone https://github.com/GabrielR4SH/ecoassist-api.git
 cd ecoassist-api
 ```
 
